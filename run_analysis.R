@@ -1,41 +1,53 @@
-## Load Datasets
+## Download File
 if (!file.exists("data"))
 {
     dir.create("data")
 }
 fileUrl <- "https://d396qusza40orc.cloudfront.net/getdata%2Fprojectfiles%2FUCI%20HAR%20Dataset.zip"
 download.file(fileUrl, destfile="C://Coursera//Data//Dataset.zip")
+
 ## Load Features names
 mnames <- read.table("C://Coursera//UCIHARDataset//features.txt", col.names = c("number","mname"))
+
 ## Load Training Data
-training <- read.table("C://Coursera//UCIHARDataset//train//X_train.txt", col.names = mnames$mname, check.names = FALSE)
+mtrain <- read.table("C://Coursera//UCIHARDataset//train//X_train.txt", col.names = mnames$mname, check.names = FALSE)
+
 ## Add mean and standard deviation
 mtrain <- mtrain[,grep(c("mean\\(\\)|std\\(\\)"), colnames(mtrain))]
+
 ## Load subject labels
-trainsubjectlabel <- read.table("C://Coursera//UCIHARDataset//train//subject_train.txt", col.names = "subject")
+trainsubject <- read.table("C://Coursera//UCIHARDataset//train//subject_train.txt", col.names = "subject")
+
 ## Load activity labels
-trainactivitylabel <- read.table("C://Coursera//UCIHARDataset//train//y_train.txt", col.names = "activity")
+trainactivity <- read.table("C://Coursera//UCIHARDataset//train//y_train.txt", col.names = "activity")
+
 ## Combine training subject labels, activity labels, and measurements
-traindata <- cbind(trainsubjectlabel, trainactivitylabel, mtrain)
-## 1B. Testing data
+traindata <- cbind(trainsubject, trainactivity, mtrain)
+
+## Load Testing data
 mtest <- read.table("C://Coursera//UCIHARDataset//test//X_test.txt", col.names = mnames$mname, check.names = FALSE)
+
 ## Add mean and standard deviation
 mtest <- mtest[,grep(c("mean\\(\\)|std\\(\\)"), colnames(mtest))]
+
 ## Load subject labels for testing measurements
-testsubjectlabel <- read.table("C://Coursera//UCIHARDataset//test//subject_test.txt", col.names = "subject")
+testsubject <- read.table("C://Coursera//UCIHARDataset//test//subject_test.txt", col.names = "subject")
+
 ## Load activity labels for testing measurements
-testactivitylabel <- read.table("C://Coursera//UCIHARDataset//test//y_test.txt", col.names = "activity")
+testactivity <- read.table("C://Coursera//UCIHARDataset//test//y_test.txt", col.names = "activity")
+
 ## Combine testing subject labels, activity labels, and measurements
-testdata <- cbind(testsubjectlabel, testactivitylabel, mtest)
-## 1C. rbind together the training and test data into one data frame
+testdata <- cbind(testsubject, testactivity, mtest)
+
+## Merge together the training and test data into one data frame
 fulldata <- rbind(traindata, testdata)
 
-## Get average value for each activity
-splitby <- list(fulldata$subject, full_data$activity)
+## Split by subject and activity
+splitby <- list(fulldata$subject, fulldata$activity)
 splitdata <- split(fulldata, splitby)
 
 ## Function to Get means of each activity
-FUNCTION_COL_MEANS <- function(df){
+fColMeans <- function(df){
     columnmeans <- colMeans(df) 
     columnmeans <- as.matrix(columnmeans)
     columnmeans <- t(columnmeans)
@@ -44,18 +56,20 @@ FUNCTION_COL_MEANS <- function(df){
 }
 
 ## Apply funtion for each split and return as a list of data frames
-split_data <- lapply(X = split_data, FUN = FUNCTION_COL_MEANS)
+splitdata <- lapply(X = splitdata, FUN = fColMeans)
+
 ## Merge all the data frames in the list into a single data frame
-finaldata <- do.call(rbind, split_data)
+finaldata <- do.call(rbind, splitdata)
+
 ## Remove bad row names
 rownames(finaldata) = NULL
 
-## Add good comumn names
-colnames(finaldata) <- gsub("\\(\\)", "", colnames(tidy_data))
-colnames(finaldata) <- gsub("-", "_", colnames(tidy_data))
-colnames(finaldata)[3:68] <- paste("mean_of_", colnames(tidy_data)[3:68], sep = "")
-activities_names <- read.table("C://Coursera//UCIHARDataset//activity_labels.txt", col.names = c("activity","activity_name"))
-finaldata <- merge(activities_names, finaldata, by = "activity", all.x = TRUE)
+## Add good column names
+colnames(finaldata) <- gsub("\\(\\)", "", colnames(finaldata))
+colnames(finaldata) <- gsub("-", "_", colnames(finaldata))
+activitiesnames <- read.table("C://Coursera//UCIHARDataset//activity_labels.txt", col.names = c("activity","activity_name"))
+finaldata <- merge(activitiesnames, finaldata, by = "activity", all.x = TRUE)
 
-##Write dataset to text file
+## Write final dataset to text file
 write.table(finaldata, "C://Coursera//HumanActivity.txt",row.name=FALSE)
+
