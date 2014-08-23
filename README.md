@@ -9,6 +9,10 @@ Download file.
 
 Read files into data frame.
 
+Generate activity names from features list.
+
+Assign activity names to columns.
+
 Merge data frames for training and test data.
 
 Split data in to activities.
