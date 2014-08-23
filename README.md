@@ -17,8 +17,6 @@ Create function to generate mean values for each activity and apply.
 
 Generate mean of all activities.
 
-Merge train and test datasets.
-
 Add good column labels for activities.
 
 Extract text file from dataset.
